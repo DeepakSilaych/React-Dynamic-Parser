@@ -1,4 +1,4 @@
-# ReactDynamicParser
+# React Dynamic Parser
 
 A React library for dynamic content parsing and form input, allowing you to embed editable dynamic content into your React applications easily.
 
