@@ -1,70 +1,182 @@
-# Getting Started with Create React App
+# ReactDynamicParser
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React library for dynamic content parsing and form input, allowing you to embed editable dynamic content into your React applications easily.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Dynamic Content Parsing:** Parse dynamic content embedded within text.
+- **Customizable Inputs:** Support for different input types (text, URL, number) based on the content type.
+- **Custom Parsers:** Ability to define custom parsers to fit specific needs.
+- **Context-based State Management:** Manage state seamlessly with React Context API.
 
-### `npm start`
+## Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Install the library using npm:
+```bash
+npm install react-dynamic-parser
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Usage
 
-### `npm test`
+```jsx
+import React from 'react';
+import { DynamicContentProvider, DynamicContentDisplay, DynamicContentForm } from 'react-dynamic-parser';
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+const App = () => {
+  const initialContent = "This is a sample content with [text:editable text] and [url:https://example.com]";
 
-### `npm run build`
+  return (
+    <DynamicContentProvider initialContent={initialContent}>
+      <DynamicContentDisplay />
+      <DynamicContentForm />
+    </DynamicContentProvider>
+  );
+};
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export default App;
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Custom Parsers
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+You can define custom parsers to parse content based on your requirements. Here's an example of a custom parser that parses content within square brackets:
 
-### `npm run eject`
+```jsx
+const customParseContent = (content) => {
+  // Custom parsing logic
+  // Example: parse [bold:text] and [italic:text]
+  const regex = /\[([^\]:]*):([^\]]+)\]/g;
+  let match;
+  const keyValuePairs = [];
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+  while ((match = regex.exec(content)) !== null) {
+    keyValuePairs.push({ type: match[1], value: match[2], original: match[0] });
+  }
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  return keyValuePairs;
+};
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+const App = () => {
+  const initialContent = "This is a sample content with [bold:important text] and [italic:emphasized text]";
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+  return (
+    <DynamicContentProvider initialContent={initialContent} parseContent={customParseContent}>
+      <DynamicContentDisplay />
+      <DynamicContentForm />
+    </DynamicContentProvider>
+  );
+};
 
-## Learn More
+export default App;
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Componnets
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### DynamicContentProvider
 
-### Code Splitting
+The provider component that initializes the context with the parsed content and manages state.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+#### Props
+- `initialContent` (string): The initial content string to be parsed.
+- `parseContent` (function): Optional custom parser function.
 
-### Analyzing the Bundle Size
+```jsx
+<DynamicContentProvider 
+    initialContent={initialContent} 
+    parseContent={customParseContent}
+>
+  {children}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+</DynamicContentProvider>
+```
 
-### Making a Progressive Web App
+### DynamicContentDisplay
+The component responsible for rendering the dynamically generated content.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```jsx
+<DynamicContentDisplay />
+```
 
-### Advanced Configuration
+### DynamicContentForm
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+The component that renders the form inputs for editing the dynamic content.
 
-### Deployment
+```jsx
+<DynamicContentForm />
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Example
 
-### `npm run build` fails to minify
+#### Using Different Input Types
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```jsx
+const initialContent = "Name: [text:John Doe], Age: [number:30], Website: [url:https://example.com]";
+
+const App = () => {
+  return (
+    <DynamicContentProvider initialContent={initialContent}>
+      <DynamicContentDisplay />
+      <DynamicContentForm />
+    </DynamicContentProvider>
+  );
+};
+
+export default App;
+```
+
+### Styling the Components
+
+You can style the components by passing custom class names or using CSS modules.
+
+```css
+/* App.css */
+.input-container {
+  margin-bottom: 1rem;
+}
+
+.input-container label {
+  font-weight: bold;
+}
+```
+
+```js
+import './App.css';
+
+const App = () => {
+  const initialContent = "Edit this text: [text:click to edit]";
+
+  return (
+    <DynamicContentProvider initialContent={initialContent}>
+      <DynamicContentDisplay />
+      <DynamicContentForm />
+    </DynamicContentProvider>
+  );
+};
+
+export default App;
+```
+
+
+### API
+ 
+#### DynamicContentProvider
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| initialContent | string | The initial content string to be parsed. |
+| parseContent | function | Optional custom parser function. |
+
+#### DynamicContentDisplay
+No props. Uses context to display the generated content.
+
+#### DynamicContentForm
+No props. Uses context to display and manage form inputs.
+
+### Contributing 
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or feedback.
+
+### License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Acknowledgements Note
+By following this detailed README, users will have a clear understanding of how to install, use, and customize the `ReactDynamicParser` library.
